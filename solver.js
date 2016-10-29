@@ -1,15 +1,29 @@
+function revealRequest(request) {
+    const {row, col} = request;
+    return {
+	type: 'reveal',
+	contents: {
+	    row,
+	    col
+	}
+    };
+}
+
 function processBoard(gameBoard) {
     const board = analyzeBoard(gameBoard);
-    let reveal = [];
+    const requests = [];
     function randomCell() {
 	const row = Math.floor((Math.random() * board.numRows));
 	const col = Math.floor((Math.random() * board.numCols));
 	return {row, col};
     }
     if (board.allHidden) {
-	reveal.push(randomCell());
+	const request = revealRequest(randomCell());
+	requests.push(request);
+    } else {
+	requests.push("display");
     }
-    return reveal;
+    return requests;
 }
 
 function analyzeBoard(gameBoard) {

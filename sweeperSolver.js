@@ -14,10 +14,8 @@ let client = net.connect({port:2000}, () => {
 	    const gameInfo = JSON.parse(data);
 	    const response = playGame(gameInfo);
 	    if (response) {
-		client.write(JSON.stringify(response));
 		console.log('sending:', response);
-		client.write('"display"');
-
+		client.write(JSON.stringify(response));
 	    }
 	} catch (e) {
 	    console.log('Unexpected Data: ', + data);
@@ -27,30 +25,19 @@ let client = net.connect({port:2000}, () => {
     });
 });
 
-function revealRequest(request) {
-    const {row, col} = request;
-    return {
-	type: 'reveal',
-	contents: {
-	    row,
-	    col
-	}
-    };
-}
 
 function playGame(gameInfo) {
-    let request;
+    let requests;
     switch(gameInfo.boardState) {
     case 'READY': {
-	const reveal = solver.processBoard(gameInfo.board);
-	if (reveal.length) request = revealRequest(reveal[0]);
+	requests = solver.processBoard(gameInfo.board);
 	break;
     }
     default:
 	process.exit();
     }
-    return request;
+    return requests;
 }
 
 console.log('sending: sendBoard');
-client.write('"sendBoard"');
+client.write('["sendBoard"]');
